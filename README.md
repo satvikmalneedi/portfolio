@@ -3,7 +3,7 @@
 Welcome to my personal portfolio website, built using modern web technologies including **React**, **Vite**, **Tailwind CSS**, **Framer Motion**, and **Three.js**.  
 It showcases my projects, experience, skills, and background as a **Computer Engineering student at Georgia Tech**.
 
-Live site: [sadaveek.github.io/portfolio](https://satvikmalneedi.github.io/portfolio)
+Live site: [satvikmalneedi.github.io/portfolio](https://satvikmalneedi.github.io/portfolio)
 
 ---
 
