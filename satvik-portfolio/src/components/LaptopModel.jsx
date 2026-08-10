@@ -1,7 +1,23 @@
-import { useRef, useState, useEffect, useMemo } from "react";
+import { useRef, useState, useEffect, useMemo, Component } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF, Environment, Html } from "@react-three/drei";
 import Terminal from "./Terminal";
+
+class WebGLErrorBoundary extends Component {
+    constructor(props) {
+        super(props);
+        this.state = { hasError: false };
+    }
+    static getDerivedStateFromError() {
+        return { hasError: true };
+    }
+    render() {
+        if (this.state.hasError) {
+            return this.props.fallback ?? null;
+        }
+        return this.props.children;
+    }
+}
 
 function Laptop() {
     const { scene } = useGLTF(import.meta.env.BASE_URL + "/laptop.glb");
@@ -109,32 +125,34 @@ export default function LaptopModel() {
 
     return (
         <>
-        <div className="absolute bottom-0 left-0 h-[calc(100vh-4rem)] w-full">
-            <Canvas shadows camera={{ position: [0, 17, 50], fov: 50 }} dpr={[1, 2]} className = "z-0">
-                <directionalLight
-                    position={largeScreen ? [-15, 15, 15] : [-5, 5, 15]}
-                    intensity={0.8}
-                    castShadow
-                    shadow-mapSize-width={4096}
-                    shadow-mapSize-height={4096}
-                    shadow-bias={-0.0001}
-                    shadow-camera-near={0.1}
-                    shadow-camera-far={100}
-                    shadow-camera-left={-30}
-                    shadow-camera-right={30}
-                    shadow-camera-top={30}
-                    shadow-camera-bottom={-30}
-                />
+        <div className="absolute bottom-0 left-0 h-[calc(100vh-4rem)] w-full" style={{ position: "absolute" }}>
+            <WebGLErrorBoundary fallback={null}>
+                <Canvas shadows camera={{ position: [0, 17, 50], fov: 50 }} dpr={[1, 2]} className="z-0">
+                    <directionalLight
+                        position={largeScreen ? [-15, 15, 15] : [-5, 5, 15]}
+                        intensity={0.8}
+                        castShadow
+                        shadow-mapSize-width={4096}
+                        shadow-mapSize-height={4096}
+                        shadow-bias={-0.0001}
+                        shadow-camera-near={0.1}
+                        shadow-camera-far={100}
+                        shadow-camera-left={-30}
+                        shadow-camera-right={30}
+                        shadow-camera-top={30}
+                        shadow-camera-bottom={-30}
+                    />
 
-                <Laptop />
+                    <Laptop />
 
-                <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -8, 0]} receiveShadow>
-                    <planeGeometry args={[150, 150]} />
-                    <shadowMaterial opacity={0.5} />
-                </mesh>
+                    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -8, 0]} receiveShadow>
+                        <planeGeometry args={[150, 150]} />
+                        <shadowMaterial opacity={0.5} />
+                    </mesh>
 
-                <Environment preset="night" />
-            </Canvas>
+                    <Environment preset="night" />
+                </Canvas>
+            </WebGLErrorBoundary>
         </div>
         </>
     );

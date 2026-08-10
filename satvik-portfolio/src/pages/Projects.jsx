@@ -36,7 +36,7 @@ function Projects() {
   });
 
   useEffect(() => {
-    const unsubscribe = scrollYProgress.onChange((value) => {
+    const unsubscribe = scrollYProgress.on("change", (value) => {
       const projectIndex = Math.min(projects.length - 1, Math.floor(value * projects.length));
       setActiveProject(projectIndex);
     });
