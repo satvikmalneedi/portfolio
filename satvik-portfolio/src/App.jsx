@@ -27,7 +27,7 @@ function App() {
     };
   }, [scrollLock]);
 
-  useLenisScroll({ duration: 1.2, offset: 0 });
+  useLenisScroll({ duration: 1.1, offset: 0 });
 
   return (
     <div className="font-sans">
