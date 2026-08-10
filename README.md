@@ -1,13 +1,13 @@
-# 💻 Satvik Malneedi: Portfolio Website
+# Satvik Malneedi: Portfolio Website
 
 Welcome to my personal portfolio website, built using modern web technologies including **React**, **Vite**, **Tailwind CSS**, **Framer Motion**, and **Three.js**.  
 It showcases my projects, experience, skills, and background as a **Computer Engineering student at Georgia Tech**.
 
-🌐 Live site: [sadaveek.github.io/portfolio](https://sadaveek.github.io/portfolio)
+Live site: [sadaveek.github.io/portfolio](https://sadaveek.github.io/portfolio)
 
 ---
 
-## 🚀 Features
+## Features
 
 - Interactive 3D model using `@react-three/fiber`
 - Smooth animations with `Framer Motion` and `Tailwind CSS`
@@ -18,7 +18,7 @@ It showcases my projects, experience, skills, and background as a **Computer Eng
 
 ---
 
-## 📁 Tech Stack
+## Tech Stack
 
 | Category     | Tools & Libraries                         |
 |--------------|-------------------------------------------|
@@ -29,7 +29,7 @@ It showcases my projects, experience, skills, and background as a **Computer Eng
 
 ---
 
-## 🛠️ Setup & Development
+## Setup & Development
 
 1. **Clone the repo**
 
@@ -58,7 +58,7 @@ It showcases my projects, experience, skills, and background as a **Computer Eng
    ```bash
    npm run deploy
    ```
-## 📂 Folder Structure
+## Folder Structure
 
 ```
 public/           → Static assets
@@ -73,13 +73,13 @@ vite.config.js    → Vite configuration
 
 ---
 
-## 📄 License
+## License
 
 This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-## 🙋‍♂️ About Me
+## About Me
 
 I'm Satvik Malneedi, a Computer Engineering student passionate about software, chip design, and the intersection between hardware and software.  
 Check out the site above or connect with me via [LinkedIn](https://www.linkedin.com/in/sadaveek/).
