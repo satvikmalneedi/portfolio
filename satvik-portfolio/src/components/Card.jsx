@@ -1,6 +1,7 @@
+import { memo } from "react";
 import Tilt from "react-parallax-tilt";
 
-function Card({ color1, color2, title, image, description, techStack = []}) {
+const Card = memo(function Card({ color1, color2, title, image, description, techStack = []}) {
     return (
         <Tilt tiltMaxAngleX={10} tiltMaxAngleY={10} perspective={2000} glareEnable={true} glareMaxOpacity={0}>
             <div 
@@ -18,10 +19,10 @@ function Card({ color1, color2, title, image, description, techStack = []}) {
                         {techStack.map(({ name, icon }, idx) => (
                         <span
                             key={idx}
-                            className="flex navbar-elements items-center gap-2 w-auto bg-white bg-opacity-10 text-white text-xs px-3 py-1 rounded-full border border-white border-opacity-20"
+                            className="flex navbar-elements items-center gap-2 w-auto bg-white bg-opacity-10 text-white text-xs px-3 py-1.5 rounded-full border border-white border-opacity-20"
                         >
                             {name}
-                            <span className="text-lg">{icon}</span>
+                            <span className="text-xl">{icon}</span>
                         </span>
                         ))}
                     </div>
@@ -29,6 +30,6 @@ function Card({ color1, color2, title, image, description, techStack = []}) {
             </div>
         </Tilt>
     );
-}
+});
 
 export default Card;

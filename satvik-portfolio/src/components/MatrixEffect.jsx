@@ -4,10 +4,12 @@ function MatrixEffect() {
     const canvasRef = useRef(null);
     const dropsRef = useRef([]);
     const intervalRef = useRef(null);
+    const ctxRef = useRef(null);
 
     const initializeCanvas = () => {
         const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
+        ctxRef.current = canvas.getContext("2d");
+        const ctx = ctxRef.current;
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -21,7 +23,7 @@ function MatrixEffect() {
 
     const drawMatrix = () => {
         const canvas = canvasRef.current;
-        const ctx = canvas.getContext("2d");
+        const ctx = ctxRef.current;
 
         ctx.fillStyle = "rgba(13, 17, 23, 0.4)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -45,20 +47,33 @@ function MatrixEffect() {
     useEffect(() => {
         initializeCanvas();
 
+        let rafId;
         const resizeHandler = () => {
-            initializeCanvas();
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(initializeCanvas);
         };
-
         window.addEventListener("resize", resizeHandler);
 
         const timeout = setTimeout(() => {
             intervalRef.current = setInterval(drawMatrix, 50);
         }, 5000);
 
+        const handleVisibility = () => {
+            if (document.hidden) {
+                clearInterval(intervalRef.current);
+                intervalRef.current = null;
+            } else if (!intervalRef.current) {
+                intervalRef.current = setInterval(drawMatrix, 50);
+            }
+        };
+        document.addEventListener("visibilitychange", handleVisibility);
+
         return () => {
             clearTimeout(timeout);
             clearInterval(intervalRef.current);
+            cancelAnimationFrame(rafId);
             window.removeEventListener("resize", resizeHandler);
+            document.removeEventListener("visibilitychange", handleVisibility);
         };
     }, []);
 

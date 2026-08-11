@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import { motion, AnimatePresence } from "framer-motion";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { FaLocationDot } from "react-icons/fa6";
 import { FiExternalLink } from "react-icons/fi";
 
-function AccordionSection({
+const AccordionSection = memo(function AccordionSection({
   location,
   mode,
   date,
@@ -85,6 +85,7 @@ function AccordionSection({
                   src={imageSrc}
                   alt="Job Visual"
                   className="w-full max-w-[150px] rounded-md mt-2"
+                  loading="lazy"
                 />
               </div>
             </div>
@@ -93,6 +94,6 @@ function AccordionSection({
       </AnimatePresence>
     </div>
   );
-}
+});
 
 export default AccordionSection;

@@ -1,35 +1,37 @@
 import Logo from "../assets/ChipLogo.png";
 import HamburgerMenu from "../assets/HamburgerIcon.png";
 import HamburgerClose from "../assets/CloseButton.png";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
+import useScrollLock from "../hooks/useScrollLock.jsx";
 
 function NavBar() {
   const [nav, setNav] = useState(true);
-  const [scrollLock, setScrollLock] = useState(false);
+  const [menuScrollLock, setMenuScrollLock] = useState(false);
 
-  const handleNav = () => {
-    setNav(!nav);
-    setScrollLock(!scrollLock);
-  };
+  const handleNav = useCallback(() => {
+    setNav((prev) => !prev);
+    setMenuScrollLock((prev) => !prev);
+  }, []);
 
-  useEffect(() => {
-    if (scrollLock) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-  }, [scrollLock]);
+  useScrollLock(menuScrollLock);
 
   useEffect(() => {
+    let rafId;
     const handleResize = () => {
-      if (window.innerWidth >= 640) {
-        setNav(true);
-        setScrollLock(false);
-      }
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        if (window.innerWidth >= 640) {
+          setNav(true);
+          setMenuScrollLock(false);
+        }
+      });
     };
     window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      cancelAnimationFrame(rafId);
+    };
   }, []);
 
   return (

@@ -5,10 +5,11 @@ import LinkedinPFP from "../assets/LinkedinPFP.jpeg";
 function Contact() {
     return (    
         <div id = "Contact" className="relative h-[50vh] w-full bg-palette5 flex flex-col items-center justify-center text-center p-6 shadow-xl font-mona">
-            <img 
-                src= {LinkedinPFP}
-                alt="Photo of my ahhh" 
+            <img
+                src={LinkedinPFP}
+                alt="Photo of my ahhh"
                 className="w-48 h-32 rounded-full object-cover shadow-lg border-4 border-white mb-4"
+                loading="lazy"
             />
             <h2 className="text-2xl font-bold text-white">Satvik Malneedi</h2>
             <p className="text-gray-400">Computer Engineering | Georgia Tech</p>

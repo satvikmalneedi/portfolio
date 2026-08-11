@@ -26,6 +26,93 @@ const projects = [
   },
 ];
 
+const n = projects.length;
+
+// Build scroll range pairs for each project outside the component so the
+// hook call count is always the same (Rules of Hooks).
+function buildRanges() {
+  return projects.map((_, index) => {
+    const isFirst = index === 0;
+    const isLast = index === n - 1;
+
+    // image opacity range
+    const imgIn = index / n;
+    const imgOut = (index + 1) / n;
+    const imgInputRange = isFirst
+      ? [imgOut - 0.1, imgOut]
+      : isLast
+      ? [imgIn, imgIn + 0.1]
+      : [imgIn, imgIn + 0.1, imgOut - 0.1, imgOut];
+    const imgOutputRange = isFirst
+      ? [1, 0]
+      : isLast
+      ? [0, 1]
+      : [0, 1, 1, 0];
+
+    // text opacity range
+    const fadeIn = Math.max(0, (index - 0.1) / n);
+    const startFull = index / n;
+    const endFull = isLast ? 1 : (index + 0.8) / n;
+    const fadeOut = isLast ? 1 : Math.min(1, (index + 0.9) / n);
+    const txtInputRange = isFirst
+      ? [endFull, fadeOut]
+      : isLast
+      ? [fadeIn, startFull]
+      : [fadeIn, startFull, endFull, fadeOut];
+    const txtOutputRange = isFirst
+      ? [1, 0]
+      : isLast
+      ? [0, 1]
+      : [0, 1, 1, 0];
+
+    return { imgInputRange, imgOutputRange, txtInputRange, txtOutputRange };
+  });
+}
+
+const ranges = buildRanges();
+
+// Per-project sub-component so hooks are called unconditionally at the top level.
+function ProjectImage({ project, index, scrollYProgress, isActive }) {
+  const { imgInputRange, imgOutputRange } = ranges[index];
+  const opacity = useTransform(scrollYProgress, imgInputRange, imgOutputRange);
+  return (
+    <motion.div
+      className={`absolute mb-3 md:w-4/5 md:mt-0 max-w-[50vh] md:max-w-none mt-36 shadow-2xl hover:scale-105 hover:rotate-[-2deg] hover:cursor-pointer active:scale-100 transition-transform duration-300 ${isActive ? 'pointer-events-auto' : 'pointer-events-none'}`}
+      style={{ opacity }}
+    >
+      <img
+        src={project.image}
+        alt={project.title}
+        className="w-full rounded-lg border-4 border-gray-200"
+        loading="lazy"
+      />
+      <div className="absolute inset-0 opacity-20 rounded-lg" />
+    </motion.div>
+  );
+}
+
+function ProjectText({ project, index, scrollYProgress, isActive }) {
+  const { txtInputRange, txtOutputRange } = ranges[index];
+  const opacity = useTransform(scrollYProgress, txtInputRange, txtOutputRange);
+  return (
+    <motion.div
+      className={`absolute text-white md:mt-0 -mt-20 px-6 ${isActive ? 'pointer-events-auto' : 'pointer-events-none'}`}
+      style={{ opacity }}
+    >
+      <h2 className="text-4xl font-bold">{project.title}</h2>
+      <p className="text-lg text-gray-300 mt-4 max-w-md">{project.description}</p>
+      <a
+        href={project.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-block mt-6 bg-palette2 hover:bg-palette3 hover:scale-105 hover:cursor-pointer active:scale-90 text-white font-semibold py-2 px-5 rounded-full shadow-md transition duration-300"
+      >
+        Open Project
+      </a>
+    </motion.div>
+  );
+}
+
 function Projects() {
   const containerRef = useRef(null);
   const [activeProject, setActiveProject] = useState(0);
@@ -37,14 +124,14 @@ function Projects() {
 
   useEffect(() => {
     const unsubscribe = scrollYProgress.on("change", (value) => {
-      const projectIndex = Math.min(projects.length - 1, Math.floor(value * projects.length));
+      const projectIndex = Math.min(n - 1, Math.floor(value * n));
       setActiveProject(projectIndex);
     });
     return () => unsubscribe();
   }, [scrollYProgress]);
 
   return (
-    <section ref={containerRef} id="Projects" className="font-mona relative bg-palette6" style={{ height: `${projects.length * 100}vh` }}>
+    <section ref={containerRef} id="Projects" className="font-mona relative bg-palette6" style={{ height: `${n * 100}vh` }}>
       <div className="sticky top-0 flex md:flex-row flex-col h-screen items-center justify-between px-12">
         <motion.h1 
           initial={{opacity: 0, y: 40}} 
@@ -56,104 +143,29 @@ function Projects() {
         >
           Projects
         </motion.h1>
-        <div className="md:w-3/5 w-full relative h-full flex items-center justify-center">
-          {projects.map((project, index) => {
-            const isLastProject = index === projects.length - 1;
-            const isFirstProject = index === 0;
-            
-            const fadeInPoint = index / projects.length;  
-            const fadeOutPoint = (index + 1) / projects.length;
-            
-            let projectProgress;
-            
-            if (isFirstProject) {
-              projectProgress = useTransform(
-                scrollYProgress,
-                [fadeOutPoint - 0.1, fadeOutPoint],
-                [1, 0]
-              );
-            } else if (isLastProject) {
-              projectProgress = useTransform(
-                scrollYProgress,
-                [fadeInPoint, fadeInPoint + 0.1],
-                [0, 1]
-              );
-            } else {
-              projectProgress = useTransform(
-                scrollYProgress,
-                [fadeInPoint, fadeInPoint + 0.1, fadeOutPoint - 0.1, fadeOutPoint],
-                [0, 1, 1, 0]
-              );
-            }
 
-            return (
-              <motion.div 
-                key={project.title}
-                className={`absolute mb-3 md:w-4/5 md:mt-0 max-w-[50vh] md:max-w-none mt-36 shadow-2xl hover:scale-105 hover:rotate-[-2deg] hover:cursor-pointer active:scale-100 transition-transform duration-300 ${activeProject === index ? 'pointer-events-auto' : 'pointer-events-none'}`}
-                style={{ opacity: projectProgress }}
-              >
-                <img 
-                  src={project.image} 
-                  alt={project.title}
-                  className="w-full rounded-lg border-4 border-gray-200"
-                />
-                <div className={`absolute inset-0 opacity-20 rounded-lg`} />
-              </motion.div>
-            );
-          })}
+        <div className="md:w-3/5 w-full relative h-full flex items-center justify-center">
+          {projects.map((project, index) => (
+            <ProjectImage
+              key={project.title}
+              project={project}
+              index={index}
+              scrollYProgress={scrollYProgress}
+              isActive={activeProject === index}
+            />
+          ))}
         </div>
 
         <div className="md:w-2/5 w-full h-full flex flex-col justify-center">
-          {projects.map((project, index) => {
-            const isLastProject = index === projects.length - 1;
-            const isFirstProject = index === 0;
-            
-            const fadeInPoint = Math.max(0, (index - 0.1) / projects.length);
-            const startFullOpacity = index / projects.length;
-            const endFullOpacity = isLastProject ? 1 : (index + 0.8) / projects.length;
-            const fadeOutPoint = isLastProject ? 1 : Math.min(1, (index + 0.9) / projects.length);
-            
-            let textProgress;
-            
-            if (isFirstProject) {
-              textProgress = useTransform(
-                scrollYProgress,
-                [endFullOpacity, fadeOutPoint],
-                [1, 0]
-              );
-            } else if (isLastProject) {
-              textProgress = useTransform(
-                scrollYProgress,
-                [fadeInPoint, startFullOpacity],
-                [0, 1]
-              );
-            } else {
-              textProgress = useTransform(
-                scrollYProgress,
-                [fadeInPoint, startFullOpacity, endFullOpacity, fadeOutPoint],
-                [0, 1, 1, 0]
-              );
-            }
-
-            return (
-              <motion.div
-                key={project.title}
-                className={`absolute text-white md:mt-0 -mt-20 px-6 ${activeProject === index ? 'pointer-events-auto' : 'pointer-events-none'}`}
-                style={{ opacity: textProgress }}
-              >
-                <h2 className="text-4xl font-bold">{project.title}</h2>
-                <p className="text-lg text-gray-300 mt-4 max-w-md">{project.description}</p>
-                <a
-                  href={project.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block mt-6 bg-palette2 hover:bg-palette3 hover:scale-105 hover:cursor-pointer active:scale-90 text-white font-semibold py-2 px-5 rounded-full shadow-md transition duration-300"
-                >
-                  Open Project
-                </a>
-              </motion.div>
-            );
-          })}
+          {projects.map((project, index) => (
+            <ProjectText
+              key={project.title}
+              project={project}
+              index={index}
+              scrollYProgress={scrollYProgress}
+              isActive={activeProject === index}
+            />
+          ))}
         </div>
       </div>
     </section>

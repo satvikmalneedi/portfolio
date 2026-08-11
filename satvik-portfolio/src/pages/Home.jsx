@@ -1,24 +1,12 @@
-import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import NavBar from '../components/NavBar.jsx'
 import DynamicText from '../components/DynamicText.jsx'
 import LaptopModel from '../components/LaptopModel.jsx';
 import MatrixEffect from '../components/MatrixEffect.jsx';
 import Resume from "../assets/Resume - Satvik Malneedi.pdf";
-import useLenisScroll from '../hooks/useLenisScroll.jsx';
 
 
 function Home() {
-    const [scrollLock, setScrollLock] = useState(true);
-    
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setScrollLock(false);
-        }, 5000);
-        return () => clearTimeout(timer);
-    }, []);
-
-    useLenisScroll({ duration: 1.2, offset: 0 });
 
     return(
         <div id="Home" className="relative h-screen w-auto bg-palette6">

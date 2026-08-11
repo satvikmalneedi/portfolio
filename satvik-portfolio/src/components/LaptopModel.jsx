@@ -19,11 +19,31 @@ class WebGLErrorBoundary extends Component {
     }
 }
 
-function Laptop() {
+// Shared hook so the resize listener is registered only once per mount.
+function useLargeScreen() {
+    const [largeScreen, setLargeScreen] = useState(() => window.innerWidth > 1024);
+    useEffect(() => {
+        let rafId;
+        const handleResize = () => {
+            cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(() => setLargeScreen(window.innerWidth > 1024));
+        };
+        window.addEventListener("resize", handleResize);
+        return () => {
+            window.removeEventListener("resize", handleResize);
+            cancelAnimationFrame(rafId);
+        };
+    }, []);
+    return largeScreen;
+}
+
+function Laptop({ largeScreen }) {
     const { scene } = useGLTF(import.meta.env.BASE_URL + "/laptop.glb");
     const laptopRef = useRef();
-    const [largeScreen, setLargeScreen] = useState(true);
     const [animationCancel, setAnimationCancel] = useState(false);
+
+    // Cache the 2D canvas context reference
+    const ctxRef = useRef(null);
 
     useMemo(() => {
         scene.traverse((child) => {
@@ -32,13 +52,6 @@ function Laptop() {
             }
         });
     }, [scene]);
-
-    useEffect(() => {
-        const handleResize = () => setLargeScreen(window.innerWidth > 1024);
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
 
     useEffect(() => {
         if (!largeScreen) setAnimationCancel(true);
@@ -113,15 +126,7 @@ function Laptop() {
 }
 
 export default function LaptopModel() {
-
-    const [largeScreen, setLargeScreen] = useState(true);
-
-    useEffect(() => {
-        const handleResize = () => setLargeScreen(window.innerWidth > 1024);
-        handleResize();
-        window.addEventListener("resize", handleResize);
-        return () => window.removeEventListener("resize", handleResize);
-    }, []);
+    const largeScreen = useLargeScreen();
 
     return (
         <>
@@ -132,8 +137,8 @@ export default function LaptopModel() {
                         position={largeScreen ? [-15, 15, 15] : [-5, 5, 15]}
                         intensity={0.8}
                         castShadow
-                        shadow-mapSize-width={4096}
-                        shadow-mapSize-height={4096}
+                        shadow-mapSize-width={1024}
+                        shadow-mapSize-height={1024}
                         shadow-bias={-0.0001}
                         shadow-camera-near={0.1}
                         shadow-camera-far={100}
@@ -143,7 +148,7 @@ export default function LaptopModel() {
                         shadow-camera-bottom={-30}
                     />
 
-                    <Laptop />
+                    <Laptop largeScreen={largeScreen} />
 
                     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -8, 0]} receiveShadow>
                         <planeGeometry args={[150, 150]} />

@@ -1,19 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import Lenis from '@studio-freight/lenis'
 
-export default function useLenisScroll({ duration = 1.2, offset = 0} = {}) {
-
-  const [scrollLock, setScrollLock] = useState(true);
-
+export default function useLenisScroll({ duration = 1.2, offset = 0, enabled = true } = {}) {
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setScrollLock(false);
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, []);
+    if (!enabled) return;
 
-  useEffect(() => {
-    if (scrollLock) return;
     const lenis = new Lenis({
       duration,
       smooth: true,
@@ -39,5 +30,5 @@ export default function useLenisScroll({ duration = 1.2, offset = 0} = {}) {
     return () => {
       lenis.destroy();
     };
-  }, [duration, offset, scrollLock]);
+  }, [duration, offset, enabled]);
 }

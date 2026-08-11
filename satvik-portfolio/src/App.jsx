@@ -5,6 +5,7 @@ import Projects from './pages/Projects.jsx';
 import Experience from './pages/Experience.jsx';
 import Contact from './pages/Contact.jsx';
 import useLenisScroll from './hooks/useLenisScroll.jsx';
+import useScrollLock from './hooks/useScrollLock.jsx';
 
 function App() {
   const [scrollLock, setScrollLock] = useState(true);
@@ -16,18 +17,9 @@ function App() {
     return () => clearTimeout(timer);
   }, []);
 
-  useEffect(() => {
-    if (scrollLock) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
-  }, [scrollLock]);
+  useScrollLock(scrollLock);
 
-  useLenisScroll({ duration: 1.1, offset: 0 });
+  useLenisScroll({ duration: 1.1, offset: 0, enabled: !scrollLock });
 
   return (
     <div className="font-sans">
